@@ -29,10 +29,15 @@ _tables: dict[str,Type[Base]] = {}
 
 # create a helper function that manufactures subclasses of Base for new tables
 def make_record_class(table_name: str) -> Type[Base]:
-    class RecordClass(Base):
-        __tablename__ = table_name
-        args:   Mapped[bytes] = mapped_column(primary_key=True)
-        result: Mapped[bytes] = mapped_column()
+    # use exec to create a new record class based on the table name
+    exec(
+        f'class {table_name.title()}(Base):\n'
+        f'\t__tablename__ = "{table_name}"\n'
+         '\targs:   Mapped[bytes] = mapped_column(primary_key=True)\n'
+         '\tresult: Mapped[bytes] = mapped_column()\n\n'
+    )
+    # look up that class in locals so it can be returned
+    RecordClass: Type[Base] = locals()[table_name.title()]
     return RecordClass
 
 # create a helper function that converts an args tuple and kwargs dict into bytes

@@ -33,6 +33,14 @@ def delayed_echo(x: T, delay_ms: int) -> T:
     while datetime.now(UTC) < return_time: pass
     return x
 
+# define a second simple function to make sure separate functions are in separate tables
+@db_cache()
+def fibonacci(x: int) -> int:
+    if x < 0: raise ValueError("fibonacci not defined for negative values")
+    elif x == 0: return 0
+    elif x == 1: return 1
+    else: return fibonacci(x-1) + fibonacci(x-2)
+
 class TestDatabaseFuncCache(unittest.TestCase):
     # create some simple arguments to see if caching is working
     _ints:   tuple[int,...] = tuple(range(10))
